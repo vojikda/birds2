@@ -96,14 +96,22 @@ function normalizeAnswerText(s) {
     .replace(/\s+/g, " ")
     // Unicode default lowercasing is consistent across engines; avoids locale quirks.
     .toLowerCase()
-    // Typo-tolerant: accented letters treated like plain ASCII for scoring only.
+    // Typo-tolerant: Czech diacritics folded to plain letters for scoring only.
     .replace(/á/g, "a")
     .replace(/é/g, "e")
     .replace(/ě/g, "e")
     .replace(/í/g, "i")
+    .replace(/ó/g, "o")
     .replace(/ú/g, "u")
     .replace(/ů/g, "u")
-    .replace(/ý/g, "y");
+    .replace(/ý/g, "y")
+    .replace(/č/g, "c")
+    .replace(/ď/g, "d")
+    .replace(/ň/g, "n")
+    .replace(/ř/g, "r")
+    .replace(/š/g, "s")
+    .replace(/ť/g, "t")
+    .replace(/ž/g, "z");
 }
 
 /**
