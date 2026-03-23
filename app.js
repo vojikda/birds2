@@ -28,22 +28,27 @@ function showLoading(show) {
 function normalizeAnswerText(s) {
   return String(s ?? "")
     .normalize("NFC")
+    // Strip BOM / zero-width chars that can break “first word” checks
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    // NBSP and other space-like code points → normal space (then collapse)
+    .replace(/[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/g, " ")
     .trim()
     .replace(/\s+/g, " ")
-    .toLocaleLowerCase("cs");
+    // Unicode default lowercasing is consistent across engines; avoids locale quirks.
+    .toLowerCase();
 }
 
 /**
- * Full name must match, or for multi-word names (e.g. "Lyska černá") the first
- * word alone ("Lyska") counts as correct.
+ * Full name must match, or the player may type only the first word of a
+ * multi-word name (e.g. "racek" for "RACEK CHECHTAVÝ").
  */
 function evaluateAnswer(guess, correctName) {
   const g = normalizeAnswerText(guess);
   const full = normalizeAnswerText(correctName);
   if (!g) return { correct: false, partial: false };
   if (g === full) return { correct: true, partial: false };
-  const parts = full.split(" ").filter(Boolean);
-  if (parts.length >= 2 && g === parts[0]) {
+  // First word only: normalized full name must start with guess + word boundary (space).
+  if (full.length > g.length && full.startsWith(g) && full[g.length] === " ") {
     return { correct: true, partial: true };
   }
   return { correct: false, partial: false };
