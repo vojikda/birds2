@@ -208,6 +208,7 @@ body {
   margin-top: 8px;
   color: var(--muted);
   font-size: 14px;
+  white-space: pre-wrap;
 }
 
 .controls {

@@ -4,6 +4,84 @@ const SCORE_WRONG = -1;
 
 const $ = (sel) => document.querySelector(sel);
 
+const RANKS = [
+  {
+    // For 15 rounds and scoring +1/-1, the number of correct answers is:
+    // correct = (score + 15) / 2
+    minCorrect: 0,
+    title: "Začátečník",
+    blurb: "Neva — každý nějak začíná. Zkus si nejdřív projít režim učení.",
+  },
+  {
+    minCorrect: 4,
+    title: "Mírně pokročilý",
+    blurb: "Základy už jsou vidět. Teď přidat pár správných názvů navíc.",
+  },
+  {
+    minCorrect: 6,
+    title: "Pokročilý",
+    blurb: "Solidní výkon. Poznávačka ti začíná jít.",
+  },
+  {
+    minCorrect: 9,
+    title: "Expert",
+    blurb: "Daří se! Máš dobrý přehled a rychle se zlepšuješ.",
+  },
+  {
+    minCorrect: 11,
+    title: "Mistr",
+    blurb: "Paráda. Stabilně vysoká úspěšnost.",
+  },
+  {
+    minCorrect: 13,
+    title: "Velmistr",
+    blurb: "Skoro bez chyby! Jen kousek k absolutní špičce.",
+  },
+  {
+    // “14–15” správných odpovědí = top výkon.
+    minCorrect: 14,
+    title: "Ptačí bůh",
+    blurb: "Legenda! Tohle už je ptačí vševědoucnost.",
+  },
+];
+
+function getRankIndexForCorrect(correctCount) {
+  let idx = 0;
+  for (let i = 0; i < RANKS.length; i++) {
+    if (correctCount >= RANKS[i].minCorrect) idx = i;
+  }
+  return idx;
+}
+
+function buildRankSummary({ score, correctCount }) {
+  // Fallback for safety if correctCount wasn't tracked for some reason.
+  const inferredCorrect =
+    typeof correctCount === "number"
+      ? correctCount
+      : Math.round((Number(score) + 15) / 2);
+  const idx = getRankIndexForCorrect(inferredCorrect);
+  const current = RANKS[idx];
+  const below = idx > 0 ? RANKS[idx - 1] : null;
+  const above = idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
+
+  let neighborText = "";
+  if (below && above) {
+    neighborText = `Jsi lepší než „${below.title}“, ale můžeš být ještě lepší a dosáhnout na „${above.title}“.`;
+  } else if (!below && above) {
+    neighborText = `Můžeš se zlepšit a dostat se na „${above.title}“.`;
+  } else if (below && !above) {
+    neighborText = `Jsi na vrcholu žebříčku! Za tebou zůstává „${below.title}“.`;
+  } else {
+    neighborText = "Jsi na vrcholu žebříčku!";
+  }
+
+  return {
+    title: current.title,
+    blurb: current.blurb,
+    neighborText,
+  };
+}
+
 const els = {
   loading: $("#loading"),
   stats: $("#stats"),
@@ -329,6 +407,7 @@ function startNewQuiz(birdState) {
     birdState,
     round: 1,
     score: 0,
+    correctCount: 0,
     finished: false,
     currentCorrectName: null,
     currentInfo: null,
@@ -397,6 +476,7 @@ function handleAnswerSubmit(e) {
   }
 
   if (isCorrect) {
+    state.correctCount += 1;
     state.score += SCORE_CORRECT;
     els.score.textContent = String(state.score);
     setFeedback({
@@ -435,9 +515,13 @@ function finishQuiz() {
   setAnswerControlsDisabled(true);
   els.restartBtn.hidden = false;
 
+  const rank = buildRankSummary({
+    score: state.score,
+    correctCount: state.correctCount,
+  });
   setFeedback({
-    text: `Konec! Konečné skóre: ${state.score}`,
-    correctRevealText: null,
+    text: `Konec! Skóre: ${state.score}. Hodnost: ${rank.title}.`,
+    correctRevealText: `${rank.blurb}\n${rank.neighborText}`,
     isFinal: true,
   });
 }
