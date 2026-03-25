@@ -6,67 +6,66 @@ const $ = (sel) => document.querySelector(sel);
 
 const RANKS = [
   {
-    // For 15 rounds and scoring +1/-1, the number of correct answers is:
-    // correct = (score + 15) / 2
-    minCorrect: 0,
+    // Determined by total score (range: -15..15, step 2).
+    // Score formula with +1/-1 and 15 rounds:
+    //   score = 2 * correctCount - 15
+    minScore: -999,
     stars: 1,
     title: "Začátečník",
     blurb: "Neva — každý nějak začíná. Zkus si nejdřív projít režim učení.",
   },
   {
-    minCorrect: 4,
+    minScore: -7,
     stars: 2,
     title: "Mírně pokročilý",
     blurb: "Základy už jsou vidět. Teď přidat pár správných názvů navíc.",
   },
   {
-    minCorrect: 6,
+    // User requirement: category "Pokročilý" starts from score 3.
+    minScore: 3,
     stars: 3,
     title: "Pokročilý",
     blurb: "Solidní výkon. Poznávačka ti začíná jít.",
   },
   {
-    minCorrect: 9,
+    minScore: 5,
     stars: 4,
     title: "Expert",
     blurb: "Daří se! Máš dobrý přehled a rychle se zlepšuješ.",
   },
   {
-    minCorrect: 11,
+    minScore: 7,
     stars: 5,
     title: "Mistr",
     blurb: "Paráda. Stabilně vysoká úspěšnost.",
   },
   {
-    minCorrect: 13,
+    minScore: 9,
     stars: 6,
     title: "Velmistr",
     blurb: "Skoro bez chyby! Jen kousek k absolutní špičce.",
   },
   {
     // “14–15” správných odpovědí = top výkon.
-    minCorrect: 14,
+    // With 15 rounds (+1/-1):
+    // 14 correct => score 13, 15 correct => score 15.
+    minScore: 13,
     stars: 7,
     title: "Ptačí bůh",
     blurb: "Legenda! Tohle už je ptačí vševědoucnost.",
   },
 ];
 
-function getRankIndexForCorrect(correctCount) {
+function getRankIndexForScore(score) {
   let idx = 0;
   for (let i = 0; i < RANKS.length; i++) {
-    if (correctCount >= RANKS[i].minCorrect) idx = i;
+    if (score >= RANKS[i].minScore) idx = i;
   }
   return idx;
 }
 
-function buildRankSummary({ score, correctCount }) {
-  // Fallback for safety if correctCount wasn't tracked for some reason.
-  const inferredCorrect =
-    typeof correctCount === "number"
-      ? correctCount
-      : Math.round((Number(score) + 15) / 2);
-  const idx = getRankIndexForCorrect(inferredCorrect);
+function buildRankSummary({ score }) {
+  const idx = getRankIndexForScore(score);
   const current = RANKS[idx];
 
   return {
