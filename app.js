@@ -285,7 +285,8 @@ function renderQuestion({ roundIndex, totalRounds, correctRow, correctName }) {
   els.nextBtn.disabled = true;
   els.restartBtn.hidden = true;
   els.correctReveal.hidden = true;
-  els.feedbackText.textContent = "Type the Czech name of the bird, then press Answer or Enter.";
+  els.feedbackText.textContent =
+    "Napiš český název ptáka a stiskni „Odpovědět“ (nebo Enter).";
   setAnswerControlsDisabled(false);
 
   // Clear feedback content from any previous question.
@@ -376,7 +377,7 @@ function handleAnswerSubmit(e) {
 
   const guess = els.answerInput?.value ?? "";
   if (!normalizeAnswerText(guess)) {
-    els.feedbackText.textContent = "Enter a name, then press Answer.";
+    els.feedbackText.textContent = "Napiš název a stiskni „Odpovědět“.";
     els.answerInput?.focus();
     return;
   }
@@ -399,9 +400,9 @@ function handleAnswerSubmit(e) {
     state.score += SCORE_CORRECT;
     els.score.textContent = String(state.score);
     setFeedback({
-      text: "Correct!",
+      text: "Správně!",
       correctRevealText: isPartialName
-        ? `Full name: ${correctName}`
+        ? `Celý název: ${correctName}`
         : null,
       isFinal: false,
     });
@@ -409,8 +410,8 @@ function handleAnswerSubmit(e) {
     state.score += SCORE_WRONG;
     els.score.textContent = String(state.score);
     setFeedback({
-      text: "Incorrect.",
-      correctRevealText: `Correct answer: ${correctName}`,
+      text: "Špatně.",
+      correctRevealText: `Správná odpověď: ${correctName}`,
       isFinal: false,
     });
   }
@@ -435,7 +436,7 @@ function finishQuiz() {
   els.restartBtn.hidden = false;
 
   setFeedback({
-    text: `Finished! Final score: ${state.score}`,
+    text: `Konec! Konečné skóre: ${state.score}`,
     correctRevealText: null,
     isFinal: true,
   });
@@ -489,12 +490,12 @@ async function bootstrap() {
     els.round.textContent = `0 / ${ROUNDS}`;
     setAnswerControlsDisabled(true);
     setFeedback({
-      text: "Could not start quiz.",
+      text: "Kvíz se nepodařilo spustit.",
       correctRevealText: err?.message ? String(err.message) : String(err),
       isFinal: true,
     });
     els.restartBtn.hidden = false;
-    els.restartBtn.textContent = "Reload";
+    els.restartBtn.textContent = "Znovu načíst";
     els.restartBtn.onclick = () => location.reload();
   }
 }

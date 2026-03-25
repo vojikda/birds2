@@ -1,10 +1,10 @@
-# Bird Quiz (Czech)
+# Ptačí kvíz (česky)
 
-A simple 15-round bird quiz web page.
+Jednoduchý ptačí kvíz na 15 kol (webová stránka).
 
-## Data format
+## Formát dat
 
-The quiz loads `data/birds.csv` (no database, no build step).
+Kvíz načítá `data/birds.csv` (bez databáze, bez build kroku).
 
 CSV columns:
 
@@ -26,14 +26,14 @@ I extracted the embedded bird pictures from `ptaci_tabulka.xlsx` and generated:
 - `images/` (JPEG files with the bird pictures)
 - `data/birds.csv` (pairs `images/<file>` with the correct Czech name)
 
-## Scoring rules
+## Bodování
 
 - Start at `0` points.
-- Correct answer: `+1`
-- Wrong answer: `-1`
-- After 15 rounds, you see the final score and can restart.
+- Správná odpověď: `+1`
+- Špatná odpověď: `-1`
+- Po 15 kolech uvidíš konečné skóre a můžeš restartovat.
 
-## Run locally
+## Spuštění lokálně
 
 Because the page uses `fetch()` to load the CSV, open it via a local web server (not `file://`).
 
@@ -45,7 +45,7 @@ python3 -m http.server 8000
 
 Then open: `http://localhost:8000/`
 
-## Deploy to GitHub Pages
+## Nasazení na GitHub Pages
 
 1. Create a new GitHub repository (any name), then push this folder contents to it.
 2. Go to your repository settings -> **Pages**.
